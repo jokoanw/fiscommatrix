@@ -3,72 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentasi Fisika - Koordinat Silinder</title>
+    <title>Rakitan Vektor Silinder</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        :root { --unsoed-yellow: #ffcc00; --physics-blue: #003366; }
-        body { display: flex; font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; height: 100vh; background: #ecf0f1; overflow: hidden; }
+        :root { --primary: #003366; --accent: #f39c12; --bg: #1e1e1e; --text: #ecf0f1; }
+        body { display: flex; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
         
-        #sidebar { width: 45%; padding: 40px; overflow-y: auto; background: white; box-shadow: 5px 0 15px rgba(0,0,0,0.1); z-index: 10; display: flex; flex-direction: column; }
-        h1 { color: var(--physics-blue); border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.8em; margin-top: 0; }
-        
-        /* Navigasi Tahap */
-        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-        button { flex: 1; padding: 10px; font-size: 1em; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; background: #bdc3c7; color: white; transition: 0.3s; }
-        button.active { background: var(--physics-blue); color: var(--unsoed-yellow); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        button:hover:not(.active) { background: #95a5a6; }
+        /* Panel Kiri - Kontrol & Teori */
+        #sidebar { width: 40%; padding: 40px; background: #2c3e50; box-shadow: 5px 0 20px rgba(0,0,0,0.5); z-index: 10; display: flex; flex-direction: column; overflow-y: auto; }
+        h1 { color: var(--accent); border-bottom: 1px solid #7f8c8d; padding-bottom: 15px; font-size: 1.8em; margin-top: 0; font-weight: 600; }
+        .author { color: #bdc3c7; font-size: 0.9em; margin-bottom: 30px; }
 
-        .proof-step { margin-bottom: 15px; padding: 15px; background: #f9f9f9; border-left: 4px solid #bdc3c7; border-radius: 4px; opacity: 0.4; transition: 0.3s; }
-        .proof-step.active-step { opacity: 1; border-left-color: var(--physics-blue); background: #f0f8ff; transform: scale(1.02); }
-        .math-block { font-size: 1.2em; color: #2c3e50; text-align: center; padding: 5px; margin: 5px 0; }
+        /* Tombol Rakitan */
+        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
+        button { padding: 12px; font-size: 1em; font-weight: bold; cursor: pointer; border: 2px solid #34495e; border-radius: 8px; background: transparent; color: #bdc3c7; transition: all 0.3s ease; }
+        button:hover { border-color: var(--accent); color: white; }
+        button.active { background: var(--accent); color: #111; border-color: var(--accent); box-shadow: 0 0 15px rgba(243, 156, 18, 0.4); }
 
-        #canvas-container { width: 55%; position: relative; }
-        .canvas-hint { position: absolute; bottom: 20px; width: 100%; text-align: center; color: #7f8c8d; font-size: 0.9em; pointer-events: none; }
+        /* Kartu Penjelasan */
+        .step-card { display: none; padding: 20px; background: rgba(0,0,0,0.2); border-left: 4px solid var(--accent); border-radius: 6px; animation: fadeIn 0.4s ease-in; }
+        .step-card.active-card { display: block; }
+        .math-block { font-size: 1.3em; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
+
+        /* Panel Kanan - Visualisasi 3D */
+        #canvas-container { width: 60%; position: relative; background: radial-gradient(circle, #2c3e50 0%, #1a252f 100%); }
+        .canvas-hint { position: absolute; bottom: 20px; width: 100%; text-align: center; color: #7f8c8d; font-size: 0.9em; pointer-events: none; letter-spacing: 1px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <h1>Pembuktian Vektor \(\vec{P}\)</h1>
+    <h1>Pembuktian \(\vec{P}\) Koordinat Silinder</h1>
+    <div class="author">Afdhi Abdilah (K1C025036) | Fisika UNSOED</div>
     
-    <div class="nav-buttons">
-        <button id="btn-1" onclick="setStep(1)" class="active">Tahap 1</button>
-        <button id="btn-2" onclick="setStep(2)">Tahap 2</button>
-        <button id="btn-3" onclick="setStep(3)">Tahap 3</button>
-        <button id="btn-4" onclick="setStep(4)">Tahap 4</button>
+    <div class="nav-grid">
+        <button id="btn-1" onclick="setStep(1)" class="active">Tahap 1: Proyeksi Alas</button>
+        <button id="btn-2" onclick="setStep(2)">Tahap 2: Ketinggian Z</button>
+        <button id="btn-3" onclick="setStep(3)">Tahap 3: Vektor \(\hat{\rho}\)</button>
+        <button id="btn-4" onclick="setStep(4)">Tahap 4: Hasil Akhir</button>
     </div>
 
-    <div id="step-1" class="proof-step active-step">
-        <h3>1. Proyeksi Alas (Bidang XY)</h3>
-        <p>Tentukan komponen \(x\) dan \(y\) dari jari-jari silinder \(\rho\) dan sudut \(\phi\):</p>
-        <div class="math-block">\[ x = \rho \cos \phi, \quad y = \rho \sin \phi \]</div>
+    <div id="step-1" class="step-card active-card">
+        <h3>1. Proyeksi ke Bidang Alas (XY)</h3>
+        <p>Pertama, kita proyeksikan titik ke bidang alas. Dapatkan komponen \(x\) dan \(y\) berdasarkan jarak \(\rho\) dan sudut \(\phi\).</p>
+        <div class="math-block">\[ x = \rho \cos \phi \] \[ y = \rho \sin \phi \]</div>
     </div>
 
-    <div id="step-2" class="proof-step">
-        <h3>2. Ketinggian (Sumbu Z)</h3>
-        <p>Tambahkan komponen \(z\) untuk membentuk titik \(\vec{P}\) di ruang 3D:</p>
+    <div id="step-2" class="step-card">
+        <h3>2. Memasukkan Ketinggian Z</h3>
+        <p>Tarik garis lurus ke atas sejauh \(z\). Kita masukkan komponen alas tadi ke dalam persamaan vektor posisi 3D.</p>
         <div class="math-block">\[ \vec{P} = (\rho \cos \phi)\hat{i} + (\rho \sin \phi)\hat{j} + z\hat{k} \]</div>
     </div>
 
-    <div id="step-3" class="proof-step">
-        <h3>3. Vektor Radial \(\hat{\rho}\)</h3>
-        <p>Faktorkan \(\rho\) untuk melihat unit vektor radial pada bidang alas:</p>
+    <div id="step-3" class="step-card">
+        <h3>3. Menemukan Vektor \(\hat{\rho}\)</h3>
+        <p>Keluarkan variabel \(\rho\). Bagian di dalam kurung adalah definisi murni dari unit vektor radial \(\hat{\rho}\).</p>
         <div class="math-block">\[ \vec{P} = \rho (\hat{i} \cos \phi + \hat{j} \sin \phi) + z\hat{k} \]</div>
     </div>
 
-    <div id="step-4" class="proof-step">
-        <h3>4. Kesimpulan Akhir</h3>
-        <p>Ganti komponen arah radial dengan unit vektor \(\hat{\rho}\):</p>
-        <div class="math-block" style="font-weight: bold; font-size: 1.4em; color: #b7950b;">
+    <div id="step-4" class="step-card">
+        <h3>4. Kesimpulan Pembuktian</h3>
+        <p>Setelah disubstitusi, vektor posisi \(\vec{P}\) dalam koordinat silinder terbukti berhasil dirakit!</p>
+        <div class="math-block" style="color: var(--accent); font-weight: bold; font-size: 1.6em;">
             \[ \vec{P} = \rho \hat{\rho} + z\hat{k} \]
         </div>
     </div>
 </div>
 
 <div id="canvas-container">
-    <div class="canvas-hint">Klik tombol Tahap di kiri, dan putar grafik 3D menggunakan mouse/trackpad.</div>
+    <div class="canvas-hint">Drag dengan trackpad/mouse untuk merubah sudut pandang</div>
 </div>
 
 <script>
@@ -76,80 +83,91 @@
 
     function setStep(step) {
         currentStep = step;
-        // Update styling tombol dan teks
         for(let i=1; i<=4; i++) {
             document.getElementById('btn-'+i).classList.remove('active');
-            document.getElementById('step-'+i).classList.remove('active-step');
+            document.getElementById('step-'+i).classList.remove('active-card');
         }
         document.getElementById('btn-'+step).classList.add('active');
-        document.getElementById('step-'+step).classList.add('active-step');
+        document.getElementById('step-'+step).classList.add('active-card');
     }
 
     function setup() {
         let container = document.getElementById('canvas-container');
         let canvas = createCanvas(container.offsetWidth, container.offsetHeight, WEBGL);
         canvas.parent('canvas-container');
+        smooth(); // Biar garisnya nggak bergerigi (anti-aliasing)
     }
 
     function draw() {
-        background(236, 240, 241);
+        clear(); // Hapus frame sebelumnya
         orbitControl(2, 2, 0.1); 
 
-        // Sumbu Koordinat Standar
-        strokeWeight(2);
-        stroke(200, 0, 0, 100); line(-250, 0, 0, 250, 0, 0); // X merah
-        stroke(0, 200, 0, 100); line(0, -250, 0, 0, 250, 0); // Y hijau (Z p5)
-        stroke(0, 0, 200, 100); line(0, 0, -250, 0, 0, 250); // Z biru (Y p5)
+        // Atur rotasi awal supaya persis kayak di gambar buku fisika
+        rotateX(PI / 3);
+        rotateZ(-PI / 6);
 
-        let rho = 120;
-        let phi = frameCount * 0.005; // Sudut dinamis berputar lambat
+        // 0. DASAR: Sumbu Koordinat (Selalu Muncul)
+        strokeWeight(1.5);
+        stroke(255, 100, 100, 150); line(0, 0, 0, 200, 0, 0); // X Axis (Merah)
+        stroke(100, 255, 100, 150); line(0, 0, 0, 0, 200, 0); // Y Axis (Hijau)
+        stroke(100, 100, 255, 150); line(0, 0, 0, 0, 0, 200); // Z Axis (Biru)
+
+        // Variabel Dinamis (Biar vektornya muter estetik)
+        let rho = 130;
+        let phi = frameCount * 0.005; 
         let px = rho * cos(phi);
-        let pz = rho * sin(phi); 
-        let py = -150; // Ketinggian z (negatif karena Y p5 ke bawah)
+        let py = rho * sin(phi); 
+        let pz = 150; // Tinggi Z
 
-        // TAHAP 1: Proyeksi Alas (x, y)
+        // TAHAP 1: Proyeksi Alas (Bidang XY)
         if (currentStep >= 1) {
-            push();
-            rotateX(HALF_PI); translate(0, 0, -150);
-            fill(200, 200, 200, 40); noStroke(); circle(0, 0, 240); // Alas silinder
-            pop();
+            // Gambar jejak lingkaran alas
+            noFill(); stroke(255, 255, 255, 30); strokeWeight(1);
+            circle(0, 0, rho * 2);
 
-            strokeWeight(3);
-            stroke(231, 76, 60); line(0, 150, 0, px, 150, 0); // Komponen x
-            stroke(46, 204, 113); line(px, 150, 0, px, 150, pz); // Komponen y
+            // Garis komponen X dan Y
+            strokeWeight(2);
+            stroke(231, 76, 60); line(px, 0, 0, px, py, 0); // Tarikan Y
+            stroke(46, 204, 113); line(0, py, 0, px, py, 0); // Tarikan X
             
-            // Garis rho di alas
-            stroke(142, 68, 173); strokeWeight(4); line(0, 150, 0, px, 150, pz); 
+            // Titik proyeksi di alas
+            push(); translate(px, py, 0); fill(255); noStroke(); sphere(3); pop();
         }
 
-        // TAHAP 2: Ketinggian Z
+        // TAHAP 2: Tarik Garis Ketinggian Z
         if (currentStep >= 2) {
-            // Garis putus-putus ke atas (Z)
-            stroke(52, 152, 219); strokeWeight(3);
-            drawingContext.setLineDash([5, 5]); // Efek putus-putus
-            line(px, 150, pz, px, py, pz);
-            drawingContext.setLineDash([]); // Reset garis
+            // Garis vertikal Z (Solid line, bukan dashed biar ga eror)
+            stroke(52, 152, 219); strokeWeight(2);
+            line(px, py, 0, px, py, pz);
             
-            // Titik P di atas
-            push(); translate(px, py, pz); fill(41, 128, 185); noStroke(); sphere(6); pop();
+            // Titik utama P melayang di atas
+            push(); translate(px, py, pz); fill(52, 152, 219); noStroke(); sphere(5); pop();
         }
 
-        // TAHAP 3: Vektor Radial (Menyorot rho)
+        // TAHAP 3: Vektor Rho di Alas (Menyala)
         if (currentStep >= 3) {
-            // Animasi tebal pada garis rho di alas untuk penekanan
-            stroke(155, 89, 182); strokeWeight(6); 
-            line(0, 150, 0, px, 150, pz);
+            // Tarik garis tebal dari pusat ke titik alas (Vektor Rho)
+            stroke(155, 89, 182); strokeWeight(4); 
+            line(0, 0, 0, px, py, 0);
         }
 
-        // TAHAP 4: Kesimpulan (Vektor P)
+        // TAHAP 4: Vektor Final & Tabung Silinder Pembungkus
         if (currentStep >= 4) {
-            // Gambar silinder transparan utuh
-            noFill(); stroke(100, 100, 100, 30);
-            push(); rotateX(HALF_PI); cylinder(120, 300); pop();
-
-            // Vektor Utama P (Kuning emas)
+            // Vektor Utama P (Kuning menyala)
             stroke(241, 196, 15); strokeWeight(5);
             line(0, 0, 0, px, py, pz);
+
+            // Gambar tabung silinder transparan sebagai pembungkus
+            push();
+            translate(0, 0, pz/2); // Posisikan silinder di tengah sumbu Z
+            rotateX(HALF_PI); // Berdirikan silinder
+            noFill(); 
+            stroke(255, 255, 255, 40); strokeWeight(1);
+            cylinder(rho, pz);
+            pop();
+            
+            // Highlight titik P jadi kuning
+            push(); translate(px, py, pz); fill(241, 196, 15); noStroke(); sphere(6); pop();
         }
     }
 
