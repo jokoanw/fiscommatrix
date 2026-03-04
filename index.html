@@ -2,425 +2,109 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FISCOM 1447H - MATRIX COMMAND</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <title>Presentasi Koordinat Silinder - Mainn</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
-        :root {
-            --bg-deep: #050b14;
-            --neon-blue: #00f3ff;
-            --neon-orange: #ff9d00;
-            --neon-green: #00ff41;
-            --border: 1px solid rgba(0, 243, 255, 0.3);
-        }
-
-        body {
-            background-color: var(--bg-deep);
-            color: #e0e6ed;
-            font-family: 'Rajdhani', sans-serif;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* HEADER */
-        .header {
-            padding: 15px 20px;
-            background: #000;
-            border-bottom: 2px solid var(--neon-blue);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 50;
-        }
-        .title h1 { margin: 0; font-family: 'Orbitron'; font-size: 1.2rem; color: var(--neon-blue); letter-spacing: 1px; }
-        .status-badge { font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; border: 1px solid #555; color: #555; }
-        
-        /* TABLE CONTAINER */
-        .matrix-container {
-            flex: 1;
-            overflow: auto;
-            background: radial-gradient(circle at center, #0d1626 0%, #000 100%);
-            padding-bottom: 50px;
-        }
-
-        table {
-            border-collapse: separate;
-            border-spacing: 0;
-            width: 100%;
-            min-width: 1200px; /* Biar bisa di-scroll horizontal di HP */
-        }
-
-        th {
-            background: #0b1421;
-            position: sticky; top: 0; z-index: 10;
-            padding: 10px;
-            color: var(--neon-blue);
-            font-family: 'Orbitron';
-            border-bottom: 2px solid var(--neon-blue);
-            text-align: left;
-            font-size: 0.85rem;
-        }
-
-        /* Sticky First Column (Waktu) */
-        th:first-child, td:first-child {
-            position: sticky; left: 0;
-            background: #080f1c;
-            z-index: 11;
-            border-right: 1px solid var(--neon-blue);
-            width: 120px;
-            text-align: center;
-            font-weight: bold;
-        }
-        th:first-child { z-index: 12; }
-
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #222;
-            border-right: 1px solid #222;
-            vertical-align: top;
-            font-size: 0.9rem;
-        }
-
-        /* CHECKBOX ITEM */
-        .task-item {
-            display: flex; flex-direction: column; 
-            margin-bottom: 8px; padding: 5px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            transition: 0.2s;
-        }
-        .task-item.completed {
-            background: rgba(0, 255, 65, 0.1);
-            border: 1px solid var(--neon-green);
-        }
-        
-        .task-row { display: flex; align-items: center; }
-        
-        .cyber-check {
-            width: 20px; height: 20px;
-            margin-right: 8px; cursor: pointer;
-            accent-color: var(--neon-blue);
-        }
-
-        .task-desc { font-weight: 600; color: #ddd; font-size: 0.9em; }
-        .completed .task-desc { color: #888; text-decoration: line-through; }
-
-        .executor-tag {
-            font-size: 0.75em;
-            color: var(--neon-orange);
-            margin-left: 28px; /* Align with text */
-            margin-top: 2px;
-            font-family: 'Courier New', monospace;
-            display: none;
-        }
-        .completed .executor-tag { display: block; }
-
-        /* LOGIN */
-        #login-screen {
-            position: fixed; inset: 0; background: #000;
-            z-index: 9999; display: flex; justify-content: center; align-items: center;
-        }
-        .login-box { 
-            border: 1px solid var(--neon-blue); padding: 30px; text-align: center; 
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-        input { background: transparent; border: none; border-bottom: 1px solid white; color: white; text-align: center; font-size: 1.2rem; margin: 15px 0; outline: none; }
-        button { background: var(--neon-blue); border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; background: #f4f4f4; }
+        #sidebar { width: 35%; height: 100vh; padding: 20px; background: #2c3e50; color: white; overflow-y: auto; box-shadow: 2px 0 5px rgba(0,0,0,0.3); }
+        #canvas-container { width: 65%; height: 100vh; display: flex; justify-content: center; align-items: center; background: #fff; }
+        h2 { border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .step { background: #34495e; padding: 15px; margin-bottom: 15px; border-left: 5px solid #3498db; border-radius: 4px; }
+        code { background: #1e1e1e; color: #e74c3c; padding: 2px 5px; border-radius: 3px; }
+        .equation { font-size: 1.1em; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h2 style="color:white; margin-top:0;">SYSTEM ACCESS</h2>
-            <input type="text" id="username" placeholder="Enter Name" autocomplete="off">
-            <br>
-            <button onclick="login()">CONNECT</button>
-        </div>
+<div id="sidebar">
+    <h2>Pembuktian Vektor Posisi $\vec{P}$</h2>
+    <p>Halo, saya <strong>Afdhi (Mainn)</strong> dari Fisika UNSOED. Berikut adalah breakdown rumusnya:</p>
+    
+    <div class="step">
+        <strong>1. Transformasi Kartesius</strong>
+        <span class="equation">
+            $x = \rho \cos \phi$<br>
+            $y = \rho \sin \phi$<br>
+            $z = z$
+        </span>
     </div>
 
-    <div class="header">
-        <div class="title">
-            <h1>FISCOM MISSION CONTROL</h1>
-        </div>
-        <div>
-            <span id="user-badge" style="color:var(--neon-green); font-weight:bold; margin-right:10px;">GUEST</span>
-            <span id="status-badge" class="status-badge">DISCONNECTED</span>
-        </div>
+    <div class="step">
+        <strong>2. Substitusi ke $\vec{P}$</strong>
+        <span class="equation">
+            $\vec{P} = ( \rho \cos \phi )\hat{i} + ( \rho \sin \phi )\hat{j} + z\hat{k}$
+        </span>
     </div>
 
-    <div class="matrix-container">
-        <table id="sop-table">
-            <thead>
-                <tr>
-                    <th>WAKTU</th>
-                    <th>MC / FLIGHT</th>
-                    <th>SEKRE</th>
-                    <th>PJ & ACARA</th>
-                    <th>MEDIA & HUMAS</th>
-                    <th>PERKAP & LOG</th>
-                </tr>
-            </thead>
-            <tbody id="table-body">
-                </tbody>
-        </table>
+    <div class="step">
+        <strong>3. Faktorisasi $\rho$</strong>
+        <span class="equation">
+            $\vec{P} = \rho ( \hat{i} \cos \phi + \hat{j} \sin \phi ) + z\hat{k}$
+        </span>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <div class="step">
+        <strong>4. Definisi Unit Vektor $\hat{\rho}$</strong>
+        <p>Karena $\hat{\rho} = \cos \phi \hat{i} + \sin \phi \hat{j}$, maka:</p>
+        <span class="equation" style="color: #f1c40f; font-weight: bold;">
+            $\vec{P} = \rho \hat{\rho} + z\hat{k}$
+        </span>
+    </div>
+    
+    <p><small>*Gunakan mouse untuk memutar grafik 3D di samping.</small></p>
+</div>
 
-    <script>
-        // --- KONFIGURASI FIREBASE ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyAiUV8rKlbNW4MQd5f483wy4pLB3onGxqc",
-            authDomain: "sopfiscom47h.firebaseapp.com",
-            databaseURL: "https://sopfiscom47h-default-rtdb.firebaseio.com",
-            projectId: "sopfiscom47h",
-            storageBucket: "sopfiscom47h.firebasestorage.app",
-            messagingSenderId: "352305789868",
-            appId: "1:352305789868:web:8c1eb8de2236d9e8895809"
-        };
+<div id="canvas-container"></div>
 
-        // Init Firebase
-        let db;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-            
-            // Cek Koneksi
-            const connectedRef = db.ref(".info/connected");
-            connectedRef.on("value", (snap) => {
-                const statusEl = document.getElementById("status-badge");
-                if (snap.val() === true) {
-                    statusEl.innerText = "ONLINE";
-                    statusEl.style.borderColor = "#00ff41";
-                    statusEl.style.color = "#00ff41";
-                } else {
-                    statusEl.innerText = "CONNECTING...";
-                    statusEl.style.borderColor = "orange";
-                    statusEl.style.color = "orange";
-                }
-            });
+<script>
+    // Visualisasi Interaktif menggunakan P5.js
+    function setup() {
+        let canvas = createCanvas(windowWidth * 0.65, windowHeight, WEBGL);
+        canvas.parent('canvas-container');
+    }
 
-        } catch (e) {
-            alert("Firebase Error: " + e.message);
-        }
-
-        let currentUser = "";
-
-        // --- DATA LENGKAP RUNDOWN (07.00 - 14.15) ---
-        // Saya gabungkan beberapa divisi biar tabel tidak terlalu lebar di HP
-        const rundown = [
-            {
-                time: "07.00 - 07.30",
-                mc: [{t:"Standby & Cek Sound"}],
-                sekre: [{t:"Registrasi Peserta"}, {t:"Cek KTM/Kartu"}],
-                pj: [{t:"Briefing Juri"}, {t:"Siapkan Form Nilai"}],
-                medhum: [{t:"Dokumentasi Awal"}, {t:"Sambut VIP"}],
-                log: [{t:"Cek Sound System"}, {t:"Banner Terpasang"}]
-            },
-            {
-                time: "07.30 - 08.00",
-                mc: [{t:"Opening Ceremony"}, {t:"Panggil Tilawah"}],
-                sekre: [{t:"Rekap Absensi"}],
-                pj: [{t:"Arahkan Peserta"}, {t:"Briefing Teknis"}],
-                medhum: [{t:"Foto Pembukaan"}],
-                log: [{t:"Mic Ready (2 unit)"}]
-            },
-            {
-                time: "08.00 - 08.10",
-                mc: [{t:"Main Launch"}, {t:"Tone: Semangat!"}],
-                sekre: [], pj: [], medhum: [], log: []
-            },
-            {
-                time: "08.10 - 08.20",
-                mc: [{t:"Tilawah Quran"}],
-                sekre: [], pj: [], 
-                medhum: [{t:"Foto Qari"}], 
-                log: [{t:"Mic Stand Ready"}]
-            },
-            {
-                time: "08.20 - 08.50",
-                mc: [{t:"Sambutan Ketua"}, {t:"Sambutan Pembina"}],
-                sekre: [{t:"Standby Admin"}],
-                pj: [{t:"Time Keeper (Kode)"}],
-                medhum: [{t:"Foto Sambutan"}],
-                log: [{t:"Cek AC/Kipas"}]
-            },
-            {
-                time: "08.50 - 09.00",
-                mc: [{t:"Jeda Persiapan"}],
-                sekre: [],
-                pj: [{t:"Cek File Essay"}],
-                medhum: [],
-                log: [{t:"Steril Panggung"}, {t:"Cek HDMI"}]
-            },
-            {
-                time: "09.10 - 09.45",
-                mc: [{t:"Panggil Peserta 1-5"}],
-                sekre: [{t:"Rekap Nilai Masuk"}],
-                pj: [{t:"Timer 7 Menit"}, {t:"Operator Slide"}],
-                medhum: [{t:"Live Story IG"}],
-                log: [{t:"Pointer Ready"}]
-            },
-            {
-                time: "09.45 - 09.55",
-                mc: [{t:"Ice Breaking 1"}],
-                sekre: [], pj: [], medhum: [], log: []
-            },
-            {
-                time: "09.55 - 10.05",
-                mc: [{t:"Persiapan Story"}],
-                sekre: [], pj: [], medhum: [], 
-                log: [{t:"Set Mic Clip-on"}, {t:"Atur Lighting"}]
-            },
-            {
-                time: "10.05 - 11.17",
-                mc: [{t:"Lomba Storytelling (10 Org)"}],
-                sekre: [{t:"Kumpulkan Nilai Juri"}],
-                pj: [{t:"Timer 7 Menit"}, {t:"Transisi Cepat"}],
-                medhum: [{t:"Foto Tiap Peserta"}],
-                log: [{t:"Standby Mic Cadangan"}]
-            },
-            {
-                time: "11.17 - 11.30",
-                mc: [{t:"Ice Breaking 2"}, {t:"Info Ishoma"}],
-                sekre: [], pj: [], medhum: [], log: []
-            },
-            {
-                time: "11.30 - 12.30",
-                mc: [{t:"ISHOMA"}],
-                sekre: [{t:"Jaga Meja Regis"}],
-                pj: [{t:"Amankan Ruang Lomba"}],
-                medhum: [],
-                log: [{t:"Venue Tetap Dijaga"}]
-            },
-            {
-                time: "12.30 - 13.30",
-                mc: [{t:"Hiburan / Quiz"}],
-                sekre: [{t:"FINALISASI REKAP NILAI"}],
-                pj: [{t:"Crosscheck Juri 2x"}],
-                medhum: [{t:"Video Testimoni"}],
-                log: []
-            },
-            {
-                time: "13.40 - 14.00",
-                mc: [{t:"Pengumuman Juara"}],
-                sekre: [{t:"Serahkan SK Juara"}],
-                pj: [{t:"Bawa Piala ke Panggung"}],
-                medhum: [{t:"Foto Pemenang"}],
-                log: [{t:"Musik Victory Standby"}]
-            },
-            {
-                time: "14.00 - 14.15",
-                mc: [{t:"Penutupan & Doa"}],
-                sekre: [], pj: [], 
-                medhum: [{t:"Foto Bersama"}], 
-                log: [{t:"Operasi Semut (Bersih)"}]
-            }
-        ];
-
-        // RENDER TABLE
-        const tbody = document.getElementById('table-body');
+    function draw() {
+        background(255);
+        orbitControl(); // Supaya bisa diputar-putar pakai mouse
         
-        rundown.forEach((row, index) => {
-            let tr = document.createElement('tr');
-            
-            // Generate Cells
-            let html = `<td>${row.time}</td>`;
-            html += createCell(row.mc, index, 'mc');
-            html += createCell(row.sekre, index, 'sk');
-            html += createCell(row.pj, index, 'pj');
-            html += createCell(row.medhum, index, 'mh');
-            html += createCell(row.log, index, 'lg');
-            
-            tr.innerHTML = html;
-            tbody.appendChild(tr);
-        });
+        // Gambar Sumbu Koordinat
+        strokeWeight(2);
+        stroke(200, 0, 0); line(-200, 0, 0, 200, 0, 0); // Sumbu X
+        stroke(0, 200, 0); line(0, -200, 0, 0, 200, 0); // Sumbu Y (Z di P5)
+        stroke(0, 0, 200); line(0, 0, -200, 0, 0, 200); // Sumbu Z (Y di P5)
 
-        function createCell(tasks, rowIndex, colCode) {
-            if (!tasks || tasks.length === 0) return "<td></td>";
-            
-            let cell = "<td>";
-            tasks.forEach((task, taskIndex) => {
-                const uniqueId = `r${rowIndex}_${colCode}_${taskIndex}`;
-                cell += `
-                    <div class="task-item" id="box-${uniqueId}">
-                        <div class="task-row">
-                            <input type="checkbox" class="cyber-check" 
-                                id="chk-${uniqueId}" 
-                                onclick="updateTask('${uniqueId}')">
-                            <span class="task-desc">${task.t}</span>
-                        </div>
-                        <div class="executor-tag" id="tag-${uniqueId}"></div>
-                    </div>
-                `;
-            });
-            cell += "</td>";
-            return cell;
-        }
+        // Gambar Silinder Transparan
+        noFill();
+        stroke(100, 100, 100, 100);
+        push();
+        rotateX(HALF_PI);
+        cylinder(100, 200);
+        pop();
 
-        // LOGIN SYSTEM
-        function login() {
-            const input = document.getElementById("username").value;
-            if (input.trim() !== "") {
-                currentUser = input.toUpperCase();
-                document.getElementById("user-badge").innerText = "OP: " + currentUser;
-                document.getElementById("login-screen").style.display = "none";
-                startListening();
-            } else {
-                alert("Masukkan nama dulu!");
-            }
-        }
+        // Vektor Posisi P
+        let rho = 100;
+        let phi = frameCount * 0.01; // Vektornya muter pelan biar dramatis
+        let px = rho * cos(phi);
+        let pz = rho * sin(phi);
+        let py = -100; // Tinggi z
 
-        // --- ENGINE UTAMA (SYNC LOGIC) ---
-        function updateTask(id) {
-            if (!db) return alert("Database Error!");
-            
-            const checkbox = document.getElementById(`chk-${id}`);
-            const isChecked = checkbox.checked;
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+        // Gambar Garis Vektor P
+        stroke(243, 156, 18);
+        strokeWeight(4);
+        line(0, 0, 0, px, py, pz);
+        
+        // Titik P
+        push();
+        translate(px, py, pz);
+        fill(243, 156, 18);
+        noStroke();
+        sphere(5);
+        pop();
+    }
+</script>
 
-            // Kirim ke Firebase
-            db.ref('tasks/' + id).set({
-                done: isChecked,
-                by: isChecked ? currentUser : null,
-                when: isChecked ? timeString : null
-            }).catch(err => {
-                alert("Gagal simpan: " + err.message);
-                checkbox.checked = !isChecked; // Balikin kalau gagal
-            });
-        }
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-        function startListening() {
-            // Dengerin perubahan data Realtime
-            db.ref('tasks').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const item = data[key];
-                        const checkbox = document.getElementById(`chk-${key}`);
-                        const box = document.getElementById(`box-${key}`);
-                        const tag = document.getElementById(`tag-${key}`);
-
-                        if (checkbox) {
-                            checkbox.checked = item.done;
-                            if (item.done) {
-                                box.classList.add("completed");
-                                tag.innerText = `✓ ${item.by} [${item.when}]`;
-                            } else {
-                                box.classList.remove("completed");
-                                tag.innerText = "";
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    </script>
 </body>
 </html>
