@@ -14,7 +14,12 @@
         /* Panel Kiri - Kontrol & Teori */
         #sidebar { width: 40%; padding: 40px; background: #2c3e50; box-shadow: 5px 0 20px rgba(0,0,0,0.5); z-index: 10; display: flex; flex-direction: column; overflow-y: auto; }
         h1 { color: var(--accent); border-bottom: 1px solid #7f8c8d; padding-bottom: 15px; font-size: 1.8em; margin-top: 0; font-weight: 600; }
-        .author { color: #bdc3c7; font-size: 0.9em; margin-bottom: 30px; }
+        
+        /* Modifikasi Kotak Nama Kelompok */
+        .author-box { background: rgba(0,0,0,0.25); padding: 15px 20px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 30px; color: #bdc3c7; font-size: 0.95em; line-height: 1.6; }
+        .author-box strong { color: #ecf0f1; font-size: 1.1em; display: block; margin-bottom: 5px; }
+        .author-box ul { margin: 0; padding-left: 20px; }
+        .author-box li { margin-bottom: 3px; }
 
         /* Tombol Rakitan */
         .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
@@ -38,7 +43,16 @@
 
 <div id="sidebar">
     <h1>Pembuktian \(\vec{P}\) Persamaan Koordinat Silinder</h1>
-    <div class="author">Afdhi Abdilah (K1C025036) | Kelompok 2 Fisika UNSOED</div>
+    
+    <div class="author-box">
+        <strong>Kelompok 2 | Fisika UNSOED</strong>
+        <ul>
+            <li>Afdhi Abdilah (K1C025036)</li>
+            <li>Nama Teman 1 (NIM Teman 1)</li>
+            <li>Nama Teman 2 (NIM Teman 2)</li>
+            <li>Nama Teman 3 (NIM Teman 3)</li>
+        </ul>
+    </div>
     
     <div class="nav-grid">
         <button id="btn-1" onclick="setStep(1)" class="active">Tahap 1: Proyeksi Alas</button>
@@ -95,78 +109,62 @@
         let container = document.getElementById('canvas-container');
         let canvas = createCanvas(container.offsetWidth, container.offsetHeight, WEBGL);
         canvas.parent('canvas-container');
-        smooth(); // Biar garisnya nggak bergerigi (anti-aliasing)
+        smooth(); 
     }
 
     function draw() {
-        clear(); // Hapus frame sebelumnya
+        clear(); 
         orbitControl(2, 2, 0.1); 
 
-        // Atur rotasi awal supaya persis kayak di gambar buku fisika
         rotateX(PI / 3);
         rotateZ(-PI / 6);
 
-        // 0. DASAR: Sumbu Koordinat (Selalu Muncul)
         strokeWeight(1.5);
-        stroke(255, 100, 100, 150); line(0, 0, 0, 200, 0, 0); // X Axis (Merah)
-        stroke(100, 255, 100, 150); line(0, 0, 0, 0, 200, 0); // Y Axis (Hijau)
-        stroke(100, 100, 255, 150); line(0, 0, 0, 0, 0, 200); // Z Axis (Biru)
+        stroke(255, 100, 100, 150); line(0, 0, 0, 200, 0, 0); 
+        stroke(100, 255, 100, 150); line(0, 0, 0, 0, 200, 0); 
+        stroke(100, 100, 255, 150); line(0, 0, 0, 0, 0, 200); 
 
-        // Variabel Dinamis (Biar vektornya muter estetik)
         let rho = 130;
         let phi = frameCount * 0.005; 
         let px = rho * cos(phi);
         let py = rho * sin(phi); 
-        let pz = 150; // Tinggi Z
+        let pz = 150; 
 
-        // TAHAP 1: Proyeksi Alas (Bidang XY)
         if (currentStep >= 1) {
-            // Gambar jejak lingkaran alas
             noFill(); stroke(255, 255, 255, 30); strokeWeight(1);
             circle(0, 0, rho * 2);
 
-            // Garis komponen X dan Y
             strokeWeight(2);
-            stroke(231, 76, 60); line(px, 0, 0, px, py, 0); // Tarikan Y
-            stroke(46, 204, 113); line(0, py, 0, px, py, 0); // Tarikan X
+            stroke(231, 76, 60); line(px, 0, 0, px, py, 0); 
+            stroke(46, 204, 113); line(0, py, 0, px, py, 0); 
             
-            // Titik proyeksi di alas
             push(); translate(px, py, 0); fill(255); noStroke(); sphere(3); pop();
         }
 
-        // TAHAP 2: Tarik Garis Ketinggian Z
         if (currentStep >= 2) {
-            // Garis vertikal Z (Solid line, bukan dashed biar ga eror)
             stroke(52, 152, 219); strokeWeight(2);
             line(px, py, 0, px, py, pz);
             
-            // Titik utama P melayang di atas
             push(); translate(px, py, pz); fill(52, 152, 219); noStroke(); sphere(5); pop();
         }
 
-        // TAHAP 3: Vektor Rho di Alas (Menyala)
         if (currentStep >= 3) {
-            // Tarik garis tebal dari pusat ke titik alas (Vektor Rho)
             stroke(155, 89, 182); strokeWeight(4); 
             line(0, 0, 0, px, py, 0);
         }
 
-        // TAHAP 4: Vektor Final & Tabung Silinder Pembungkus
         if (currentStep >= 4) {
-            // Vektor Utama P (Kuning menyala)
             stroke(241, 196, 15); strokeWeight(5);
             line(0, 0, 0, px, py, pz);
 
-            // Gambar tabung silinder transparan sebagai pembungkus
             push();
-            translate(0, 0, pz/2); // Posisikan silinder di tengah sumbu Z
-            rotateX(HALF_PI); // Berdirikan silinder
+            translate(0, 0, pz/2); 
+            rotateX(HALF_PI); 
             noFill(); 
             stroke(255, 255, 255, 40); strokeWeight(1);
             cylinder(rho, pz);
             pop();
             
-            // Highlight titik P jadi kuning
             push(); translate(px, py, pz); fill(241, 196, 15); noStroke(); sphere(6); pop();
         }
     }
