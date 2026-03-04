@@ -11,57 +11,80 @@
         :root { --unsoed-yellow: #ffcc00; --physics-blue: #003366; }
         body { display: flex; font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; height: 100vh; background: #ecf0f1; overflow: hidden; }
         
-        /* Bagian Kiri: Teks dan Rumus */
-        #sidebar { width: 45%; padding: 40px; overflow-y: auto; background: white; box-shadow: 5px 0 15px rgba(0,0,0,0.1); border-top: 8px solid var(--unsoed-yellow); z-index: 10; }
-        h1 { color: var(--physics-blue); border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.8em; }
-        .proof-step { margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid var(--physics-blue); border-radius: 4px; }
-        .math-block { font-size: 1.2em; color: #2c3e50; text-align: center; padding: 5px; margin: 5px 0; }
-        footer { margin-top: 30px; font-size: 0.9em; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+        #sidebar { width: 45%; padding: 40px; overflow-y: auto; background: white; box-shadow: 5px 0 15px rgba(0,0,0,0.1); z-index: 10; display: flex; flex-direction: column; }
+        h1 { color: var(--physics-blue); border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.8em; margin-top: 0; }
+        
+        /* Navigasi Tahap */
+        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { flex: 1; padding: 10px; font-size: 1em; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; background: #bdc3c7; color: white; transition: 0.3s; }
+        button.active { background: var(--physics-blue); color: var(--unsoed-yellow); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        button:hover:not(.active) { background: #95a5a6; }
 
-        /* Bagian Kanan: Canvas 3D */
-        #canvas-container { width: 55%; display: flex; justify-content: center; align-items: center; position: relative; }
-        .canvas-hint { position: absolute; bottom: 20px; text-align: center; width: 100%; color: #7f8c8d; font-size: 0.9em; pointer-events: none; }
+        .proof-step { margin-bottom: 15px; padding: 15px; background: #f9f9f9; border-left: 4px solid #bdc3c7; border-radius: 4px; opacity: 0.4; transition: 0.3s; }
+        .proof-step.active-step { opacity: 1; border-left-color: var(--physics-blue); background: #f0f8ff; transform: scale(1.02); }
+        .math-block { font-size: 1.2em; color: #2c3e50; text-align: center; padding: 5px; margin: 5px 0; }
+
+        #canvas-container { width: 55%; position: relative; }
+        .canvas-hint { position: absolute; bottom: 20px; width: 100%; text-align: center; color: #7f8c8d; font-size: 0.9em; pointer-events: none; }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <h1>Pembuktian Vektor Posisi \(\vec{P}\)</h1>
-    <p><strong>Afdhi Abdilah (K1C025036)</strong> - Fisika UNSOED</p>
-
-    <div class="proof-step">
-        <h3>1. Proyeksi ke Bidang Alas</h3>
-        <p>Komponen \(x\) dan \(y\) dinyatakan dalam radius \(\rho\) dan sudut \(\phi\):</p>
-        <div class="math-block">\[ x = \rho \cos \phi, \quad y = \rho \sin \phi, \quad z = z \]</div>
+    <h1>Pembuktian Vektor \(\vec{P}\)</h1>
+    
+    <div class="nav-buttons">
+        <button id="btn-1" onclick="setStep(1)" class="active">Tahap 1</button>
+        <button id="btn-2" onclick="setStep(2)">Tahap 2</button>
+        <button id="btn-3" onclick="setStep(3)">Tahap 3</button>
+        <button id="btn-4" onclick="setStep(4)">Tahap 4</button>
     </div>
 
-    <div class="proof-step">
-        <h3>2. Substitusi Vektor Posisi</h3>
-        <p>Masukkan ke vektor \(\vec{P} = x\hat{i} + y\hat{j} + z\hat{k}\):</p>
+    <div id="step-1" class="proof-step active-step">
+        <h3>1. Proyeksi Alas (Bidang XY)</h3>
+        <p>Tentukan komponen \(x\) dan \(y\) dari jari-jari silinder \(\rho\) dan sudut \(\phi\):</p>
+        <div class="math-block">\[ x = \rho \cos \phi, \quad y = \rho \sin \phi \]</div>
+    </div>
+
+    <div id="step-2" class="proof-step">
+        <h3>2. Ketinggian (Sumbu Z)</h3>
+        <p>Tambahkan komponen \(z\) untuk membentuk titik \(\vec{P}\) di ruang 3D:</p>
         <div class="math-block">\[ \vec{P} = (\rho \cos \phi)\hat{i} + (\rho \sin \phi)\hat{j} + z\hat{k} \]</div>
     </div>
 
-    <div class="proof-step">
-        <h3>3. Faktorisasi \(\rho\)</h3>
+    <div id="step-3" class="proof-step">
+        <h3>3. Vektor Radial \(\hat{\rho}\)</h3>
+        <p>Faktorkan \(\rho\) untuk melihat unit vektor radial pada bidang alas:</p>
         <div class="math-block">\[ \vec{P} = \rho (\hat{i} \cos \phi + \hat{j} \sin \phi) + z\hat{k} \]</div>
     </div>
 
-    <div class="proof-step" style="background: #fff9e6; border-left-color: var(--unsoed-yellow);">
-        <h3>4. Substitusi Unit Vektor \(\hat{\rho}\)</h3>
-        <p>Karena \(\hat{\rho} = \hat{i} \cos \phi + \hat{j} \sin \phi\), maka persamaan akhirnya:</p>
-        <div class="math-block" style="font-weight: bold; font-size: 1.5em; color: #b7950b;">
+    <div id="step-4" class="proof-step">
+        <h3>4. Kesimpulan Akhir</h3>
+        <p>Ganti komponen arah radial dengan unit vektor \(\hat{\rho}\):</p>
+        <div class="math-block" style="font-weight: bold; font-size: 1.4em; color: #b7950b;">
             \[ \vec{P} = \rho \hat{\rho} + z\hat{k} \]
         </div>
     </div>
-    
-    <footer>Teknik Presentasi: Geser/klik area abu-abu di sebelah kanan untuk memutar model 3D.</footer>
 </div>
 
 <div id="canvas-container">
-    <div class="canvas-hint">Gunakan mouse/trackpad untuk memutar grafik 3D</div>
+    <div class="canvas-hint">Klik tombol Tahap di kiri, dan putar grafik 3D menggunakan mouse/trackpad.</div>
 </div>
 
 <script>
+    let currentStep = 1;
+
+    function setStep(step) {
+        currentStep = step;
+        // Update styling tombol dan teks
+        for(let i=1; i<=4; i++) {
+            document.getElementById('btn-'+i).classList.remove('active');
+            document.getElementById('step-'+i).classList.remove('active-step');
+        }
+        document.getElementById('btn-'+step).classList.add('active');
+        document.getElementById('step-'+step).classList.add('active-step');
+    }
+
     function setup() {
         let container = document.getElementById('canvas-container');
         let canvas = createCanvas(container.offsetWidth, container.offsetHeight, WEBGL);
@@ -69,54 +92,67 @@
     }
 
     function draw() {
-        background(236, 240, 241); // Warna abu-abu terang
-        orbitControl(2, 2, 0.1); // Interaktivitas mouse
-        
-        // Menggambar Sumbu Koordinat
+        background(236, 240, 241);
+        orbitControl(2, 2, 0.1); 
+
+        // Sumbu Koordinat Standar
         strokeWeight(2);
-        stroke(200, 0, 0); line(-250, 0, 0, 250, 0, 0); // Sumbu X (merah)
-        stroke(0, 200, 0); line(0, -250, 0, 0, 250, 0); // Sumbu Y (hijau)
-        stroke(0, 0, 200); line(0, 0, -250, 0, 0, 250); // Sumbu Z (biru)
+        stroke(200, 0, 0, 100); line(-250, 0, 0, 250, 0, 0); // X merah
+        stroke(0, 200, 0, 100); line(0, -250, 0, 0, 250, 0); // Y hijau (Z p5)
+        stroke(0, 0, 200, 100); line(0, 0, -250, 0, 0, 250); // Z biru (Y p5)
 
-        // Menggambar Silinder Transparan
-        noFill();
-        stroke(100, 100, 100, 60);
-        push();
-        rotateX(HALF_PI);
-        cylinder(120, 250);
-        pop();
-
-        // Menggambar Bidang Alas (xy)
-        push();
-        rotateX(HALF_PI);
-        translate(0, -125, 0); // Pindahkan ke dasar silinder
-        fill(200, 200, 200, 40);
-        noStroke();
-        circle(0, 0, 240); // 120 * 2
-        pop();
-
-        // Animasi Vektor P berputar
         let rho = 120;
-        let phi = frameCount * 0.005; // Kecepatan putar
+        let phi = frameCount * 0.005; // Sudut dinamis berputar lambat
         let px = rho * cos(phi);
-        let pz = rho * sin(phi);
-        let py = -125; // Titik Z paling atas di P5.js
+        let pz = rho * sin(phi); 
+        let py = -150; // Ketinggian z (negatif karena Y p5 ke bawah)
 
-        // Garis Vektor P (warna kuning/orange)
-        stroke(243, 156, 18);
-        strokeWeight(4);
-        line(0, 0, 0, px, py, pz);
-        
-        // Titik ujung Vektor P
-        push();
-        translate(px, py, pz);
-        fill(243, 156, 18);
-        noStroke();
-        sphere(6);
-        pop();
+        // TAHAP 1: Proyeksi Alas (x, y)
+        if (currentStep >= 1) {
+            push();
+            rotateX(HALF_PI); translate(0, 0, -150);
+            fill(200, 200, 200, 40); noStroke(); circle(0, 0, 240); // Alas silinder
+            pop();
+
+            strokeWeight(3);
+            stroke(231, 76, 60); line(0, 150, 0, px, 150, 0); // Komponen x
+            stroke(46, 204, 113); line(px, 150, 0, px, 150, pz); // Komponen y
+            
+            // Garis rho di alas
+            stroke(142, 68, 173); strokeWeight(4); line(0, 150, 0, px, 150, pz); 
+        }
+
+        // TAHAP 2: Ketinggian Z
+        if (currentStep >= 2) {
+            // Garis putus-putus ke atas (Z)
+            stroke(52, 152, 219); strokeWeight(3);
+            drawingContext.setLineDash([5, 5]); // Efek putus-putus
+            line(px, 150, pz, px, py, pz);
+            drawingContext.setLineDash([]); // Reset garis
+            
+            // Titik P di atas
+            push(); translate(px, py, pz); fill(41, 128, 185); noStroke(); sphere(6); pop();
+        }
+
+        // TAHAP 3: Vektor Radial (Menyorot rho)
+        if (currentStep >= 3) {
+            // Animasi tebal pada garis rho di alas untuk penekanan
+            stroke(155, 89, 182); strokeWeight(6); 
+            line(0, 150, 0, px, 150, pz);
+        }
+
+        // TAHAP 4: Kesimpulan (Vektor P)
+        if (currentStep >= 4) {
+            // Gambar silinder transparan utuh
+            noFill(); stroke(100, 100, 100, 30);
+            push(); rotateX(HALF_PI); cylinder(120, 300); pop();
+
+            // Vektor Utama P (Kuning emas)
+            stroke(241, 196, 15); strokeWeight(5);
+            line(0, 0, 0, px, py, pz);
+        }
     }
 
-    // Biar canvas menyesuaikan ukuran kalau window di-resize
     function windowResized() {
         let container = document.getElementById('canvas-container');
         resizeCanvas(container.offsetWidth, container.offsetHeight);
