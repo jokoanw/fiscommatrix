@@ -2,109 +2,64 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Presentasi Koordinat Silinder - Mainn</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentasi Fisika - Koordinat Silinder</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; background: #f4f4f4; }
-        #sidebar { width: 35%; height: 100vh; padding: 20px; background: #2c3e50; color: white; overflow-y: auto; box-shadow: 2px 0 5px rgba(0,0,0,0.3); }
-        #canvas-container { width: 65%; height: 100vh; display: flex; justify-content: center; align-items: center; background: #fff; }
-        h2 { border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        .step { background: #34495e; padding: 15px; margin-bottom: 15px; border-left: 5px solid #3498db; border-radius: 4px; }
-        code { background: #1e1e1e; color: #e74c3c; padding: 2px 5px; border-radius: 3px; }
-        .equation { font-size: 1.1em; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 5px; display: block; }
+        :root { --unsoed-yellow: #ffcc00; --physics-blue: #003366; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #fdfdfd; color: #333; }
+        .container { display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .slide-card { background: white; width: 85%; max-width: 900px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--unsoed-yellow); }
+        h1 { color: var(--physics-blue); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .proof-step { margin-bottom: 25px; padding: 15px; background: #f9f9f9; border-left: 4px solid var(--physics-blue); border-radius: 4px; }
+        .math-block { font-size: 1.3em; color: #2c3e50; text-align: center; padding: 10px; margin: 10px 0; }
+        .highlight { color: #d35400; font-weight: bold; }
+        footer { margin-top: 20px; font-size: 0.9em; color: #777; }
     </style>
 </head>
 <body>
 
-<div id="sidebar">
-    <h2>Pembuktian Vektor Posisi $\vec{P}$</h2>
-    <p>Halo, saya <strong>Afdhi (Mainn)</strong> dari Fisika UNSOED. Berikut adalah breakdown rumusnya:</p>
+<div class="container">
+    <div class="slide-card">
+        <h1>Pembuktian Vektor Posisi \(\vec{P}\)</h1>
+        <p><strong>Oleh:</strong> Afdhi Abdilah (K1C025036) - Fisika UNSOED</p>
+
+        <div class="proof-step">
+            <h3>1. Proyeksi Kartesius ke Silinder</h3>
+            <p>Berdasarkan geometri pada gambar, komponen \(x\) dan \(y\) dapat dinyatakan dalam radius radial \(\rho\) dan sudut \(\phi\):</p>
+            <div class="math-block">
+                \[ x = \rho \cos \phi, \quad y = \rho \sin \phi, \quad z = z \]
+            </div>
+        </div>
+
+        <div class="proof-step">
+            <h3>2. Substitusi Vektor Posisi Standar</h3>
+            <p>Masukkan komponen tersebut ke dalam vektor posisi Kartesius \(\vec{P} = x\hat{i} + y\hat{j} + z\hat{k}\):</p>
+            <div class="math-block">
+                \[ \vec{P} = (\rho \cos \phi)\hat{i} + (\rho \sin \phi)\hat{j} + z\hat{k} \]
+            </div>
+        </div>
+
+        <div class="proof-step">
+            <h3>3. Definisi Unit Vektor \(\hat{\rho}\)</h3>
+            <p>Dari hubungan unit vektor, kita tahu bahwa <span class="highlight">\(\hat{\rho} = \hat{i} \cos \phi + \hat{j} \sin \phi\)</span>. Mari kita faktorkan \(\rho\):</p>
+            <div class="math-block">
+                \[ \vec{P} = \rho \underbrace{(\hat{i} \cos \phi + \hat{j} \sin \phi)}_{\hat{\rho}} + z\hat{k} \]
+            </div>
+        </div>
+
+        <div class="proof-step" style="background: #fff9e6;">
+            <h3>4. Kesimpulan Akhir</h3>
+            <p>Dengan mengganti bagian dalam kurung dengan unit vektor \(\hat{\rho}\), maka diperoleh:</p>
+            <div class="math-block" style="font-weight: bold; font-size: 1.6em; color: #b7950b;">
+                \[ \vec{P} = \rho \hat{\rho} + z\hat{k} \]
+            </div>
+        </div>
+    </div>
     
-    <div class="step">
-        <strong>1. Transformasi Kartesius</strong>
-        <span class="equation">
-            $x = \rho \cos \phi$<br>
-            $y = \rho \sin \phi$<br>
-            $z = z$
-        </span>
-    </div>
-
-    <div class="step">
-        <strong>2. Substitusi ke $\vec{P}$</strong>
-        <span class="equation">
-            $\vec{P} = ( \rho \cos \phi )\hat{i} + ( \rho \sin \phi )\hat{j} + z\hat{k}$
-        </span>
-    </div>
-
-    <div class="step">
-        <strong>3. Faktorisasi $\rho$</strong>
-        <span class="equation">
-            $\vec{P} = \rho ( \hat{i} \cos \phi + \hat{j} \sin \phi ) + z\hat{k}$
-        </span>
-    </div>
-
-    <div class="step">
-        <strong>4. Definisi Unit Vektor $\hat{\rho}$</strong>
-        <p>Karena $\hat{\rho} = \cos \phi \hat{i} + \sin \phi \hat{j}$, maka:</p>
-        <span class="equation" style="color: #f1c40f; font-weight: bold;">
-            $\vec{P} = \rho \hat{\rho} + z\hat{k}$
-        </span>
-    </div>
-    
-    <p><small>*Gunakan mouse untuk memutar grafik 3D di samping.</small></p>
+    <footer>Materi: Kinematika & Sistem Koordinat - FMIPA UNSOED 2026</footer>
 </div>
-
-<div id="canvas-container"></div>
-
-<script>
-    // Visualisasi Interaktif menggunakan P5.js
-    function setup() {
-        let canvas = createCanvas(windowWidth * 0.65, windowHeight, WEBGL);
-        canvas.parent('canvas-container');
-    }
-
-    function draw() {
-        background(255);
-        orbitControl(); // Supaya bisa diputar-putar pakai mouse
-        
-        // Gambar Sumbu Koordinat
-        strokeWeight(2);
-        stroke(200, 0, 0); line(-200, 0, 0, 200, 0, 0); // Sumbu X
-        stroke(0, 200, 0); line(0, -200, 0, 0, 200, 0); // Sumbu Y (Z di P5)
-        stroke(0, 0, 200); line(0, 0, -200, 0, 0, 200); // Sumbu Z (Y di P5)
-
-        // Gambar Silinder Transparan
-        noFill();
-        stroke(100, 100, 100, 100);
-        push();
-        rotateX(HALF_PI);
-        cylinder(100, 200);
-        pop();
-
-        // Vektor Posisi P
-        let rho = 100;
-        let phi = frameCount * 0.01; // Vektornya muter pelan biar dramatis
-        let px = rho * cos(phi);
-        let pz = rho * sin(phi);
-        let py = -100; // Tinggi z
-
-        // Gambar Garis Vektor P
-        stroke(243, 156, 18);
-        strokeWeight(4);
-        line(0, 0, 0, px, py, pz);
-        
-        // Titik P
-        push();
-        translate(px, py, pz);
-        fill(243, 156, 18);
-        noStroke();
-        sphere(5);
-        pop();
-    }
-</script>
-
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </body>
 </html>
